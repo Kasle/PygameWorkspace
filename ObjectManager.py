@@ -10,6 +10,7 @@ class Manager:
             self.objects.append(object)
 
     def checkCollision(self, object1, object2):
+        
         collideUpd = False
         if object1.coordY > 600 - (object1.radius):
             object1.coordY = 600 - (object1.radius)
@@ -30,8 +31,13 @@ class Manager:
             collideUpd = True
 
         if not type(object2) == int:
+            #print((abs(object1.coordX-object2.coordX)**2+abs(object1.coordY-object2.coordY)**2)**0.5, (object1.radius + object2.radius))
             if (abs(object1.coordX-object2.coordX)**2+abs(object1.coordY-object2.coordY)**2)**0.5 <= (object1.radius + object2.radius):
-                print("Collision")
+                momentum = (object1.xVel**2 + object1.yVel**2)**0.5 + (object2.xVel**2 + object2.yVel**2)**0.5 - 2
+                mass = object1.mass + object2.mass
+                mom1 = momentum * (mass / object1.mass)
+                mom2 = momentum * (mass / object2.mass)
+                print("Collision", momentum1)
 
         if collideUpd == True:
             object1.xVel *= object1.restitution
