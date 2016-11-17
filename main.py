@@ -26,7 +26,7 @@ MANAGER = ObjectManager.Manager()
 
 gameExit = False
 
-MANAGER.addObjects([Objects.PhysicsCircle(gameDisplay, random.randint(0, 800), random.randint(0, 600), random.randint(0, 100), random.randint(0, 100), 10, random.randint(80, 95) / 100.0, 10) for i in range(2)])
+MANAGER.addObjects([Objects.PhysicsCircle(gameDisplay, random.randint(0, 800), random.randint(0, 600), random.randint(0, 100), random.randint(0, 100), 10, random.randint(80, 95) / 100.0, 10) for i in range(5)])
 
 print(MANAGER.objects[0].type)
 
