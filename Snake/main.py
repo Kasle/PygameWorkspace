@@ -2,6 +2,8 @@ import pygame
 import snakeobjects
 import random
 
+#input()
+
 pygame.init()
 
 COLOR = {
@@ -100,7 +102,7 @@ while not gameExit:
     snake.draw()
     pygame.display.update()
 
-    clock.tick(20)
+    clock.tick(60)
 
 pygame.quit()
 
