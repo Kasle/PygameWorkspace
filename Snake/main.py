@@ -102,7 +102,7 @@ while not gameExit:
     snake.draw()
     pygame.display.update()
 
-    clock.tick(60)
+    clock.tick(15)
 
 pygame.quit()
 
