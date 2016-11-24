@@ -1,13 +1,21 @@
 import noise
 import random
-import functions
+import functions as f
 
 class mapManager:
 
     def __init__(self, size, seed):
+        
         self.seed = seed
+
+        random.seed(seed)
+        
+        self.heightSeed = random.randint(0, 100000000)
+        self.moistureSeed = random.randint(0, 100000000)
+        self.temperatureSeed = random.randint(0, 100000000)
+        self.resourceSeed = random.randint(0, 100000000)
+        
         self.mapSize = size
-        random.seed(self.seed)
         self.heightMap = []
         self.temperatureMap = []
         self.moistureMap = []
@@ -15,10 +23,11 @@ class mapManager:
         self.biomeMap = []
         self.generateMaps()
 
+
     def generateMaps(self):
+        
         self.heightMap = self.generateHeightMap()
         self.moistureMap = self.generateMoistureMap()
-        #self.heightMap=self.moistureMap
         self.temperatureMap = self.generateTemperatureMap()
         #self.heightMap=self.temperatureMap
         #self.resourceMap = self.generateResourcemap()
@@ -26,66 +35,57 @@ class mapManager:
 
     
     def generateHeightMap(self):
-        tempMap = []
-        offsetScale = random.random() * 100
-        offsetX = random.random() * offsetScale
-        offsetY = random.random() * offsetScale
-        horizontalScale = 0.01
-        verticalScale = 1.3
-        runningMaxMin = [-1000, 1000]
+        
+        tempMap = f.generateNoiseMap(self.heightSeed, self.mapSize, 0.008, 0.1, 1, 10, 0.75, 1.5) #Map Values
+        
         for x in range(self.mapSize):
-            tempMap.append([])
             for y in range(self.mapSize):
-                absRange = ((x-self.mapSize/2)**2 + (y-self.mapSize/2)**2)**0.5
-                noiseValue = functions.translate(noise.pnoise2(x * horizontalScale + offsetX, y * horizontalScale + offsetY, 5, 0.3, 3), -1, 1, 0, 1)
-                #noiseValue*= (-(2*absRange/self.mapSize)**4 + 1)*verticalScale
-                tempMap[-1].append(max(-1, noiseValue))
+                absRange = min(self.mapSize/2.0, ((x-self.mapSize/2)**2 + (y-self.mapSize/2)**2)**0.5)
+                heightMultiplier = - ( absRange / (self.mapSize/2.0) )**12 + 1
+                #tempMap[x][y] *= heightMultiplier
         return tempMap
+
 
     def generateMoistureMap(self):
-        tempMap = []
-        offsetScale = random.random() * 100
-        offsetX = random.random() * offsetScale
-        offsetY = random.random() * offsetScale
+        
+        tempMap = f.generateNoiseMap(self.moistureSeed, self.mapSize, 0.008, 0, 1, 7, 0.4, 1.5)
+        
         for x in range(self.mapSize):
-            tempMap.append([])
             for y in range(self.mapSize):
-                noiseValue = noise.pnoise2(x * 0.01 + offsetX, y * 0.01 + offsetY, 4, 0.6, 1.5) / 2 + 0.5
-                noiseValue = min(max(0, (-0.8*self.heightMap[x][y] + 2.2*noiseValue )), 1)
-                tempMap[-1].append(noiseValue)
+                tempMap[x][y] = 0.6*tempMap[x][y] + 0.4*f.fMap(self.heightMap[x][y], 0, 1, 1, 0)
         return tempMap
+
 
     def generateTemperatureMap(self):
-        tempMap = []
-        offsetScale = random.random() * 100
-        offsetX = random.random() * offsetScale
-        offsetY = random.random() * offsetScale
+        
+        tempMap = f.generateNoiseMap(self.moistureSeed, self.mapSize, 0.01, -5, 5, 10, 0.8, 1.5)
+        
         for x in range(self.mapSize):
-            tempMap.append([])
             for y in range(self.mapSize):
-                noiseValue = noise.pnoise2(x * 0.005 + offsetX, y * 0.005 + offsetY, 5, 0.7, 3)*30
-                noiseValue = functions.translate(y, 0, self.mapSize, -30, 30) + noiseValue + functions.translate(max(0.5, self.heightMap[x][y]), 0.5, 1, 20, -20)
-                tempMap[-1].append(noiseValue)
-        print(max([max([j for j in i]) for i in tempMap]))
+                tempMap[x][y] = tempMap[x][y] + f.fMap(y, 0, self.mapSize, -15, 40) + 0.7*f.fMap(self.moistureMap[x][y], 0, 1, 0, 10) + min(0, f.fMap(self.heightMap[x][y], 0, 1, 50, -30))
+            
         return tempMap
 
+
     def generateResourceMap(self):
-        tempMap = []
-        offsetScale = random.random() * 100
-        offsetX = random.random() * offsetScale
-        offsetY = random.random() * offsetScale
+        
+        tempMap = f.generateNoiseMap(self.moistureSeed, self.mapSize, 0.006, 0, 1, 5, 0.4, 1.5)
+        
         for x in range(self.mapSize):
-            tempMap.append([])
             for y in range(self.mapSize):
-                tempMap[-1].append(noise.pnoise2(x * 0.01 + offsetX, y * 0.01 + offsetY, 5, 0.6, 3) / 2 + 0.5)
+                tempMap[x][y] = tempMap[x][y]
+            
         return tempMap
+
 
     def generateBiomeMap(self):
         tempMap = []
         return tempMap
 
+
     def getSeed(self):
         return self.seed
+
 
     def getSize(self):
         return self.mapSize
