@@ -25,24 +25,28 @@ class mapManager:
 
 
     def generateMaps(self):
-        
+        print("Generating Height Map...")
         self.heightMap = self.generateHeightMap()
+        print("Generating Moisture Map...")
         self.moistureMap = self.generateMoistureMap()
+        print("Generating Temperature Map...")
         self.temperatureMap = self.generateTemperatureMap()
         #self.heightMap=self.temperatureMap
         #self.resourceMap = self.generateResourcemap()
-        #self.biomeMap = self.generateBiomeMap()
+        print("Generating Biome Map...")
+        self.biomeMap = self.generateBiomeMap()
+        print("Generation Complete.")
 
     
     def generateHeightMap(self):
         
-        tempMap = f.generateNoiseMap(self.heightSeed, self.mapSize, 0.008, 0.1, 1, 10, 0.75, 1.5) #Map Values
+        tempMap = f.generateNoiseMap(self.heightSeed, self.mapSize, 0.008, 0.2, 1, 10, 0.75, 1.5) #Map Values
         
         for x in range(self.mapSize):
             for y in range(self.mapSize):
                 absRange = min(self.mapSize/2.0, ((x-self.mapSize/2)**2 + (y-self.mapSize/2)**2)**0.5)
                 heightMultiplier = - ( absRange / (self.mapSize/2.0) )**12 + 1
-                #tempMap[x][y] *= heightMultiplier
+                tempMap[x][y] *= heightMultiplier
         return tempMap
 
 
@@ -79,7 +83,70 @@ class mapManager:
 
 
     def generateBiomeMap(self):
-        tempMap = []
+        tempMap = [['none' for i in range(self.mapSize)] for j in range(self.mapSize)]
+
+        for x in range(self.mapSize):
+            for y in range(self.mapSize):
+                
+                if self.heightMap[x][y] >= 0.75:
+                    if self.temperatureMap[x][y] < 0:
+                        tempMap[x][y] = 'snowyMountain'
+                    else:
+                        tempMap[x][y] = 'mountain'
+                elif self.temperatureMap[x][y] < -5: ##Permafrost
+                    if self.heightMap[x][y] < 0.5:
+                        tempMap[x][y] = 'glacier'
+                    else:
+                        tempMap[x][y] = 'permafrost'
+                elif self.temperatureMap[x][y] < 0:
+                    if self.heightMap[x][y] < 0.5:
+                        tempMap[x][y] = 'frozenWater'
+                    else:
+                        tempMap[x][y] = 'snow'
+                elif self.heightMap[x][y] < 0.5:
+                    tempMap[x][y] = 'water'
+                elif self.temperatureMap[x][y] < 5:
+                    if self.moistureMap[x][y] < 0.3:
+                        tempMap[x][y] = 'tundra'
+                    elif self.moistureMap[x][y] < 0.6:
+                        tempMap[x][y] = 'alpineTundra'
+                    else:
+                        tempMap[x][y] = 'taiga'
+                elif self.temperatureMap[x][y] < 10:
+                    if self.moistureMap[x][y] < 0.4:
+                        tempMap[x][y] = 'alpineTundra'
+                    else:
+                        tempMap[x][y] = 'taiga'
+                elif self.temperatureMap[x][y] < 25:
+                    if self.moistureMap[x][y] < 0.2:
+                        tempMap[x][y] = 'barrenPlains'
+                    elif self.moistureMap[x][y] < 0.4:
+                        tempMap[x][y] = 'grassPlains'
+                    else:
+                        tempMap[x][y] = 'boreal'
+                elif self.temperatureMap[x][y] < 27:
+                    if self.moistureMap[x][y] < 0.3:
+                        tempMap[x][y] = 'barrenPlains'
+                    else:
+                        tempMap[x][y] = 'savanna'
+                elif self.temperatureMap[x][y] < 30:
+                    if self.moistureMap[x][y] < 0.5:
+                        tempMap[x][y] = 'wildPlains'
+                    else:
+                        tempMap[x][y] = 'boreal'
+                elif self.temperatureMap[x][y] < 35:
+                    if self.moistureMap[x][y] < 0.4:
+                        tempMap[x][y] = 'wildPlains'
+                    else:
+                        tempMap[x][y] = 'jungle'
+                else:
+                    if self.moistureMap[x][y] < 0.4:
+                        tempMap[x][y] = 'desert'
+                    elif self.moistureMap[x][y] < 0.5:
+                        tempMap[x][y] = 'wildPlains'
+                    else:
+                        tempMap[x][y] = 'jungle'
+                              
         return tempMap
 
 

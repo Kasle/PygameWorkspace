@@ -14,9 +14,9 @@ COLOR = {
     'YELLOW': (255, 255, 0)
 }
 
-mapXY = 1000
+mapXY = 800
 
-worldMap = mapManager(mapXY, 1)
+worldMap = mapManager(mapXY, 1000)
 
 minTemperature = min([min(i) for i in worldMap.temperatureMap ])
 maxTemperature = max([max(i) for i in worldMap.temperatureMap ])
@@ -41,7 +41,7 @@ while not gameExit:
         if event.type == pygame.QUIT:
             gameExit = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            print ("H:",worldMap.heightMap[event.pos[0]][event.pos[1]], "| M:",worldMap.moistureMap[event.pos[0]][event.pos[1]], "| T:",worldMap.temperatureMap[event.pos[0]][event.pos[1]])
+            print ("H:",worldMap.heightMap[event.pos[0]][event.pos[1]], "| M:",worldMap.moistureMap[event.pos[0]][event.pos[1]], "| T:",worldMap.temperatureMap[event.pos[0]][event.pos[1]], "| B:",worldMap.biomeMap[event.pos[0]][event.pos[1]])
 
     mode = 'h'
     
@@ -51,50 +51,44 @@ while not gameExit:
             #print(100*x/float(mapXY))
             for y in range(mapXY):
                 if mode == 'h': ##---------------------------
+
+                    if worldMap.biomeMap[x][y] == 'water':
+                        gameDisplay.set_at((x, y), (0, 0, 200))
+                    elif worldMap.biomeMap[x][y] == 'frozenWater':
+                        gameDisplay.set_at((x, y), (100, 100, 200))
+                    elif worldMap.biomeMap[x][y] == 'glacier':
+                        gameDisplay.set_at((x, y), (255, 255, 255))
+                    elif worldMap.biomeMap[x][y] == 'snow':
+                        gameDisplay.set_at((x, y), (255, 255, 255))
+                    elif worldMap.biomeMap[x][y] == 'snowyMountain':
+                        gameDisplay.set_at((x, y), (255, 255, 255))
+                    elif worldMap.biomeMap[x][y] == 'mountain':
+                        gameDisplay.set_at((x, y), (120, 120, 120))
+                    elif worldMap.biomeMap[x][y] == 'permafrost':
+                        gameDisplay.set_at((x, y), (255, 255, 255))
+                    elif worldMap.biomeMap[x][y] == 'tundra':
+                        gameDisplay.set_at((x, y), (150, 150, 200))
+                    elif worldMap.biomeMap[x][y] == 'alpineTundra':
+                        gameDisplay.set_at((x, y), (100, 200, 150))
+                    elif worldMap.biomeMap[x][y] == 'taiga':
+                        gameDisplay.set_at((x, y), (0, 150, 100))
+                    elif worldMap.biomeMap[x][y] == 'boreal':
+                        gameDisplay.set_at((x, y), (0, 170, 0))
+                    elif worldMap.biomeMap[x][y] == 'grassPlains':
+                        gameDisplay.set_at((x, y), (80, 180, 20))
+                    elif worldMap.biomeMap[x][y] == 'savanna':
+                        gameDisplay.set_at((x, y), (90, 170, 0))
+                    elif worldMap.biomeMap[x][y] == 'wildPlains':
+                        gameDisplay.set_at((x, y), (100, 170, 0))
+                    elif worldMap.biomeMap[x][y] == 'barrenPlains':
+                        gameDisplay.set_at((x, y), (120, 190, 50))
+                    elif worldMap.biomeMap[x][y] == 'jungle':
+                        gameDisplay.set_at((x, y), (30, 100, 0))
+                    elif worldMap.biomeMap[x][y] == 'desert':
+                        gameDisplay.set_at((x, y), (255, 255, 150))
+                    else:
+                        gameDisplay.set_at((x, y), (255, 0, 255))
                     
-                    if worldMap.heightMap[x][y] < 0.5: ##Water
-                        if worldMap.temperatureMap[x][y] < -5: #Glacier
-                            gameDisplay.set_at((x, y), (210, 210, 255))
-                        elif worldMap.temperatureMap[x][y] < 0: #Frozen Ocean
-                            gameDisplay.set_at((x, y), (50, 50, 200))
-                        else: #Ocean
-                            gameDisplay.set_at((x, y), (0, 0, 200))
-                    elif worldMap.temperatureMap[x][y] <= 0 and worldMap.moistureMap[x][y] > 0.1: ##Snow
-                        gameDisplay.set_at((x, y), (220, 220, 255))
-                    elif worldMap.heightMap[x][y] < 0.5: ##Beach
-                        if worldMap.temperatureMap[x][y] < 10: #Gravel Beach
-                            gameDisplay.set_at((x, y), (150, 150, 160))
-                        else: #Sand Beach
-                            gameDisplay.set_at((x, y), (255, 255, 50))  
-                    elif worldMap.heightMap[x][y] < 0.8: ##Land
-                        if worldMap.temperatureMap[x][y] > 40: #Desert
-                            gameDisplay.set_at((x, y), (255, 255, 100))
-                        elif worldMap.temperatureMap[x][y] > 30:  #Schrubland
-                            if worldMap.moistureMap[x][y] < 0.2:
-                                gameDisplay.set_at((x, y), (228, 255, 188))
-                            elif worldMap.moistureMap[x][y] < 0.4:
-                                gameDisplay.set_at((x, y), (156, 181, 119))
-                            elif worldMap.moistureMap[x][y] < 0.6:
-                                gameDisplay.set_at((x, y), (202, 214, 124))
-                            else:
-                                gameDisplay.set_at((x, y), (0, 100, 0))
-                        elif worldMap.temperatureMap[x][y] > 20 and worldMap.moistureMap[x][y] < 0.15: #Arid
-                            gameDisplay.set_at((x, y), (237, 255, 178))
-                        elif worldMap.temperatureMap[x][y] > 10: #Forest
-                            if worldMap.moistureMap[x][y] < 0.4:
-                                gameDisplay.set_at((x, y), (40, 160, 50))
-                            else:
-                                gameDisplay.set_at((x, y), (30, 140, 0))
-                        elif worldMap.temperatureMap[x][y] > 0: #Tundra
-                            if worldMap.moistureMap[x][y] < 0.4:
-                                gameDisplay.set_at((x, y), (40, 140, 70))
-                            else:
-                                gameDisplay.set_at((x, y), (0, 110, 60))
-                        else:
-                            gameDisplay.set_at((x, y), (0, 255, 255))
-                    else: ##Mountains
-                        gameDisplay.set_at((x, y), 3*[int(f.fMap(worldMap.heightMap[x][y], 0.8, 1, 70, 120))])
-                        
                 elif mode == 'm': ##-------------------------
                     
                     gameDisplay.set_at((x, y), 3*[f.fMap(worldMap.moistureMap[x][y], 0, 1, 0, 255)])
