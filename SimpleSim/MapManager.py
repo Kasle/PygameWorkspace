@@ -1,9 +1,9 @@
 import noise
 import random
-import functions as f
+import Functions as f
 from time import sleep
 
-class mapManager:
+class MapManager:
 
     def __init__(self, size, seed):
         
@@ -41,8 +41,8 @@ class mapManager:
         self.oceanMap()
         print("Generating Rivers...")
         self.riverMap()
-        print("Generating Terrain Bounty...")
-        self.generateFoodMap()
+        print("Generating Nature...")
+        self.foodMap = self.generateFoodMap()
         print("Generation Complete.")
 
     
@@ -70,7 +70,7 @@ class mapManager:
 
     def generateTemperatureMap(self):
         
-        tempMap = f.generateNoiseMap(self.moistureSeed, self.mapSize, 0.01, -5, 5, 10, 0.8, 1.5)
+        tempMap = f.generateNoiseMap(self.temperatureSeed, self.mapSize, 0.01, -5, 5, 10, 0.8, 1.5)
         
         for x in range(self.mapSize):
             for y in range(self.mapSize):
@@ -81,7 +81,7 @@ class mapManager:
 
     def generateResourceMap(self):
         
-        tempMap = f.generateNoiseMap(self.moistureSeed, self.mapSize, 0.05, 0, 1, 5, 0.4, 1.5)
+        tempMap = f.generateNoiseMap(self.resourceSeed, self.mapSize, 0.05, 0, 1, 5, 0.4, 1.5)
         
         for x in range(self.mapSize):
             for y in range(self.mapSize):
@@ -99,6 +99,8 @@ class mapManager:
                 if self.heightMap[x][y] >= 0.75:
                     if self.temperatureMap[x][y] < 0:
                         tempMap[x][y] = 'snowyMountain'
+                    elif self.temperatureMap[x][y] > 15:
+                        tempMap[x][y] = 'dirtMountain'
                     else:
                         tempMap[x][y] = 'mountain'
                 elif self.temperatureMap[x][y] < -5: ##Permafrost
@@ -195,7 +197,7 @@ class mapManager:
 
         for x in range(self.mapSize):
             for y in range(self.mapSize):
-                if self.biomeMap[x][y] == 'mountain':
+                if self.biomeMap[x][y] == 'mountain' or self.biomeMap[x][y] == 'dirtMountain':
                     if random.random() < 0.001:
                         riverSeeds.append([x, y])
 
@@ -246,19 +248,7 @@ class mapManager:
             for y in range(self.mapSize):
                 foodCount = 0
 
-                if self.biomeMap[x][y] == 'lake':
-                    foodCount += 1
-                elif self.biomeMap[x][y] == 'river':
-                    foodCount += 1
-                elif self.biomeMap[x][y] == 'riverLake':
-                    foodCount += 1
-                elif self.biomeMap[x][y] == 'forzenLake':
-                    foodCount += 0.5
-                elif self.biomeMap[x][y] == 'frozenOcean':
-                    foodCount += 0.25
-                elif self.biomeMap[x][y] == 'ocean':
-                    foodCount += 1
-                elif self.biomeMap[x][y] == 'snow':
+                if self.biomeMap[x][y] == 'snow':
                     foodCount += 0.1
                 elif self.biomeMap[x][y] == 'mountain':
                     foodCount += 0.2
@@ -286,7 +276,11 @@ class mapManager:
                     foodCount += 1
                 elif self.biomeMap[x][y] == 'desert':
                     foodCount += 0.1
-    
+
+                tempMap[x][y] = foodCount
+
+        return tempMap
+
     def getSeed(self):
         return self.seed
 

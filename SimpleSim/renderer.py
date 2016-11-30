@@ -1,5 +1,5 @@
 import pygame
-import functions as f
+import Functions as f
 
 COLOR = {
     'WHITE': (255, 255, 255),
@@ -10,6 +10,12 @@ COLOR = {
     'YELLOW': (255, 255, 0)
 }
 
+def colorSettlements(display, settlements):
+    for settlement in settlements:
+        for districtLayer in settlement.districtMap:
+            for district in districtLayer:
+                display.set_at((district.position[0], district.position[1]), (255, 0, 255))
+
 def colorBiomes(display, worldMap, genType):
     mode = genType
     display.fill(COLOR['BLACK'])
@@ -17,7 +23,6 @@ def colorBiomes(display, worldMap, genType):
         #print(100*x/float(worldMap.getSize()))
         for y in range(worldMap.getSize()):
             if mode == 'h': ##---------------------------
-
                 if worldMap.biomeMap[x][y] == 'lake':
                     display.set_at((x, y), (0, 0, 200))
                 elif worldMap.biomeMap[x][y] == 'river':
@@ -38,6 +43,8 @@ def colorBiomes(display, worldMap, genType):
                     display.set_at((x, y), (220, 220, 230))
                 elif worldMap.biomeMap[x][y] == 'mountain':
                     display.set_at((x, y), 3*[f.fMap(worldMap.heightMap[x][y], 0.75, 1, 80, 120)])
+                elif worldMap.biomeMap[x][y] == 'dirtMountain':
+                    display.set_at((x, y), [f.fMap(worldMap.heightMap[x][y], 0.75, 1, 90, 130), f.fMap(worldMap.heightMap[x][y], 0.75, 1, 70, 110), f.fMap(worldMap.heightMap[x][y], 0.75, 1, 40, 70)])
                 elif worldMap.biomeMap[x][y] == 'permafrost':
                     display.set_at((x, y), (255, 255, 255))
                 elif worldMap.biomeMap[x][y] == 'tundra':
